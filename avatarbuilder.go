@@ -2,6 +2,7 @@ package avatarbuilder
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
 	"image"
 	"image/color"
@@ -64,22 +65,51 @@ func (ab *AvatarBuilder) SetAvatarSize(w int, h int) {
 	ab.W = w
 	ab.H = h
 }
+func (ab *AvatarBuilder) GenerateImageAndSave(s string, outname string) error {
+	bs, err := ab.GenerateImage(s)
+	if err != nil {
+		return err
+	}
 
-func (ab *AvatarBuilder) GenerateImage(s string, outname string) error {
+	// Save that RGBA image to disk.
+	outFile, err := os.Create(outname)
+	if err != nil {
+		return errors.New("create file: " + err.Error())
+	}
+	defer outFile.Close()
+
+	b := bufio.NewWriter(outFile)
+	if _, err := b.Write(bs); err != nil {
+		return errors.New("write bytes to file: " + err.Error())
+
+	}
+	if err = b.Flush(); err != nil {
+		return errors.New("flush image: " + err.Error())
+	}
+
+	return nil
+}
+
+func (ab *AvatarBuilder) GenerateImage(s string) ([]byte, error) {
 	rgba := ab.buildColorImage()
 	if ab.ctx == nil {
 		if err := ab.buildDrawContext(rgba); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
 	x, y := ab.calc.CalculateCenterLocation(s, ab)
 	pt := freetype.Pt(x, y)
 	if _, err := ab.ctx.DrawString(s, pt); err != nil {
-		return errors.New("draw string: " + err.Error())
+		return nil, errors.New("draw string: " + err.Error())
 	}
 
-	return ab.save(outname, rgba)
+	buf := &bytes.Buffer{}
+	if err := png.Encode(buf, rgba); err != nil {
+		return nil, errors.New("png encode: " + err.Error())
+	}
+
+	return buf.Bytes(), nil
 }
 
 func (ab *AvatarBuilder) buildColorImage() *image.RGBA {
@@ -122,27 +152,6 @@ func (ab *AvatarBuilder) buildDrawContext(rgba *image.RGBA) error {
 	c.SetHinting(font.HintingNone)
 
 	ab.ctx = c
-	return nil
-}
-
-func (ab *AvatarBuilder) save(filePath string, rgba *image.RGBA) error {
-	// Save that RGBA image to disk.
-	outFile, err := os.Create(filePath)
-	if err != nil {
-		return errors.New("error when create file: " + err.Error())
-	}
-	defer outFile.Close()
-
-	b := bufio.NewWriter(outFile)
-
-	if err = png.Encode(b, rgba); err != nil {
-		return errors.New("error when encode image: " + err.Error())
-	}
-
-	if err = b.Flush(); err != nil {
-		return errors.New("error when flush image: " + err.Error())
-	}
-
 	return nil
 }
 
