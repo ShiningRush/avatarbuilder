@@ -1,4 +1,4 @@
-package example
+package main
 
 import (
 	"flag"
@@ -18,8 +18,8 @@ func main() {
 	ab := avatarbuilder.NewAvatarBuilder("./RuanMengTi-2.ttf")
 	ab.SetBackgroundColorHex(colors[0])
 	ab.SetFrontgroundColor(color.White)
-	ab.SetFontStyle(40, 40, 95)
-	if err := ab.GenerateImage("04", "./out.png"); err != nil {
+	ab.SetFontStyle(50, 40, 95)
+	if err := ab.GenerateImage("默", "./out.png"); err != nil {
 		fmt.Println(err)
 		return
 	}

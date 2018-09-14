@@ -13,3 +13,6 @@
 
 # ide
 .idea
+
+# generated pngs
+*.png

@@ -9,6 +9,7 @@ import (
 	"image/png"
 	"io/ioutil"
 	"os"
+	"regexp"
 
 	"github.com/golang/freetype"
 	"golang.org/x/image/font"
@@ -139,4 +140,17 @@ func (ab *AvatarBuilder) save(filePath string, rgba *image.RGBA) error {
 	}
 
 	return nil
+}
+
+func (ab *AvatarBuilder) calculateCenterLocation(s string) {
+	cr := regexp.MustCompile("[\u4e00-\u9FA5]{1}")
+	er := regexp.MustCompile("[a-zA-Z]{1}")
+	nr := regexp.MustCompile("[0-9]{1}")
+
+	cCount := len(cr.FindAllStringSubmatch(s, -1))
+	eCount := len(er.FindAllStringSubmatch(s, -1))
+	nCount := len(nr.FindAllStringSubmatch(s, -1))
+
+	ab.x = cCount*20 + eCount*10 + nCount*5
+	ab.y = cCount*20 + eCount*10 + nCount*5
 }
