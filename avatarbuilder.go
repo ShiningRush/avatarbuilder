@@ -9,30 +9,33 @@ import (
 	"image/png"
 	"io/ioutil"
 	"os"
-	"regexp"
 
 	"github.com/golang/freetype"
 	"golang.org/x/image/font"
 )
 
+type FontCenterCalculator interface {
+	CalculateCenterLocation(string, *AvatarBuilder) (int, int)
+}
+
 type AvatarBuilder struct {
+	W        int
+	H        int
 	fontfile string
 	fontsize float64
 	bg       color.Color
 	fg       color.Color
-	w        int
-	h        int
-	x        int
-	y        int
+	ctx      *freetype.Context
+	calc     FontCenterCalculator
 }
 
-func NewAvatarBuilder(fontfile string) *AvatarBuilder {
+func NewAvatarBuilder(fontfile string, calc FontCenterCalculator) *AvatarBuilder {
 	ab := &AvatarBuilder{}
 	ab.fontfile = fontfile
 	ab.bg, ab.fg = color.White, color.Black
-	ab.w, ab.h = 200, 200
-	ab.x, ab.y = 10, 40
+	ab.W, ab.H = 200, 200
 	ab.fontsize = 95
+	ab.calc = calc
 
 	return ab
 }
@@ -53,26 +56,26 @@ func (ab *AvatarBuilder) SetBackgroundColorHex(hex uint32) {
 	ab.bg = ab.hexToRGBA(hex)
 }
 
-func (ab *AvatarBuilder) SetFontStyle(x int, y int, size float64) {
-	ab.x = x
-	ab.y = y
+func (ab *AvatarBuilder) SetFontSize(size float64) {
 	ab.fontsize = size
 }
 
 func (ab *AvatarBuilder) SetAvatarSize(w int, h int) {
-	ab.w = w
-	ab.h = h
+	ab.W = w
+	ab.H = h
 }
 
 func (ab *AvatarBuilder) GenerateImage(s string, outname string) error {
 	rgba := ab.buildColorImage()
-	c, err := ab.buildDrawContext(rgba)
-	if err != nil {
-		return err
+	if ab.ctx == nil {
+		if err := ab.buildDrawContext(rgba); err != nil {
+			return err
+		}
 	}
 
-	pt := freetype.Pt(ab.x, ab.y+int(c.PointToFixed(ab.fontsize)>>6))
-	if _, err := c.DrawString(s, pt); err != nil {
+	x, y := ab.calc.CalculateCenterLocation(s, ab)
+	pt := freetype.Pt(x, y)
+	if _, err := ab.ctx.DrawString(s, pt); err != nil {
 		return errors.New("draw string: " + err.Error())
 	}
 
@@ -81,7 +84,7 @@ func (ab *AvatarBuilder) GenerateImage(s string, outname string) error {
 
 func (ab *AvatarBuilder) buildColorImage() *image.RGBA {
 	bg := image.NewUniform(ab.bg)
-	rgba := image.NewRGBA(image.Rect(0, 0, ab.w, ab.h))
+	rgba := image.NewRGBA(image.Rect(0, 0, ab.W, ab.H))
 	draw.Draw(rgba, rgba.Bounds(), bg, image.ZP, draw.Src)
 	return rgba
 }
@@ -97,16 +100,16 @@ func (ab *AvatarBuilder) hexToRGBA(h uint32) *color.RGBA {
 	return rgba
 }
 
-func (ab *AvatarBuilder) buildDrawContext(rgba *image.RGBA) (*freetype.Context, error) {
+func (ab *AvatarBuilder) buildDrawContext(rgba *image.RGBA) error {
 	// Read the font data.
 	fontBytes, err := ioutil.ReadFile(ab.fontfile)
 	if err != nil {
-		return nil, errors.New("error when open font file:" + err.Error())
+		return errors.New("error when open font file:" + err.Error())
 	}
 
 	f, err := freetype.ParseFont(fontBytes)
 	if err != nil {
-		return nil, errors.New("error when parse font file:" + err.Error())
+		return errors.New("error when parse font file:" + err.Error())
 	}
 
 	c := freetype.NewContext()
@@ -118,7 +121,8 @@ func (ab *AvatarBuilder) buildDrawContext(rgba *image.RGBA) (*freetype.Context, 
 	c.SetSrc(image.NewUniform(ab.fg))
 	c.SetHinting(font.HintingNone)
 
-	return c, nil
+	ab.ctx = c
+	return nil
 }
 
 func (ab *AvatarBuilder) save(filePath string, rgba *image.RGBA) error {
@@ -142,15 +146,6 @@ func (ab *AvatarBuilder) save(filePath string, rgba *image.RGBA) error {
 	return nil
 }
 
-func (ab *AvatarBuilder) calculateCenterLocation(s string) {
-	cr := regexp.MustCompile("[\u4e00-\u9FA5]{1}")
-	er := regexp.MustCompile("[a-zA-Z]{1}")
-	nr := regexp.MustCompile("[0-9]{1}")
-
-	cCount := len(cr.FindAllStringSubmatch(s, -1))
-	eCount := len(er.FindAllStringSubmatch(s, -1))
-	nCount := len(nr.FindAllStringSubmatch(s, -1))
-
-	ab.x = cCount*20 + eCount*10 + nCount*5
-	ab.y = cCount*20 + eCount*10 + nCount*5
+func (ab *AvatarBuilder) GetFontWidth() int {
+	return int(ab.ctx.PointToFixed(ab.fontsize) >> 6)
 }

@@ -6,6 +6,7 @@ import (
 	"image/color"
 
 	"github.com/ShiningRush/avatarbuilder"
+	"github.com/ShiningRush/avatarbuilder/calc"
 )
 
 var colors = []uint32{
@@ -15,11 +16,12 @@ var colors = []uint32{
 func main() {
 	flag.Parse()
 
-	ab := avatarbuilder.NewAvatarBuilder("./RuanMengTi-2.ttf")
-	ab.SetBackgroundColorHex(colors[0])
+	ab := avatarbuilder.NewAvatarBuilder("./SourceHanSansSC-Medium.ttf", &calc.SourceHansSansSCMedium{})
+	ab.SetBackgroundColorHex(colors[1])
 	ab.SetFrontgroundColor(color.White)
-	ab.SetFontStyle(50, 40, 95)
-	if err := ab.GenerateImage("默", "./out.png"); err != nil {
+	ab.SetFontSize(80)
+	ab.SetAvatarSize(200, 200)
+	if err := ab.GenerateImage("缄默", "./out.png"); err != nil {
 		fmt.Println(err)
 		return
 	}
