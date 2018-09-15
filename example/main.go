@@ -16,6 +16,7 @@ var colors = []uint32{
 func main() {
 	flag.Parse()
 
+	// init avatarbuilder, you need to tell builder ttf file and how to alignment text
 	ab := avatarbuilder.NewAvatarBuilder("./SourceHanSansSC-Medium.ttf", &calc.SourceHansSansSCMedium{})
 	ab.SetBackgroundColorHex(colors[1])
 	ab.SetFrontgroundColor(color.White)
