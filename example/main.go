@@ -21,7 +21,7 @@ func main() {
 	ab.SetFrontgroundColor(color.White)
 	ab.SetFontSize(80)
 	ab.SetAvatarSize(200, 200)
-	if err := ab.GenerateImageAndSave("12", "./out.png"); err != nil {
+	if err := ab.GenerateImageAndSave("GE", "./outEg.png"); err != nil {
 		fmt.Println(err)
 		return
 	}

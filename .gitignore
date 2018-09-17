@@ -15,6 +15,3 @@
 .idea
 .vscode
 debug
-
-# generated pngs
-*.png
