@@ -16,6 +16,7 @@ import (
 )
 
 type FontCenterCalculator interface {
+	// CalculateCenterLocation used to calculate center location in different font style
 	CalculateCenterLocation(string, *AvatarBuilder) (int, int)
 }
 
