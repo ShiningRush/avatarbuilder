@@ -1,5 +1,10 @@
 # avatarbuilder
-Using go freetype to build default avatar with string
+Using [go freetype](https://github.com/golang/freetype) to build default avatar with string
+
+
+![number text](https://github.com/ShiningRush/avatarbuilder/blob/master/example/out.png "number text")
+![english text](https://github.com/ShiningRush/avatarbuilder/blob/master/example/outEg.png "english text")
+![chinese text](https://github.com/ShiningRush/avatarbuilder/blob/master/example/outCn.png "chinese text")
 
 ## Install
 
@@ -25,3 +30,9 @@ Some snipet is as blow
 		return
 	}
 ```
+
+## Extension Other Font
+
+Because element of width of each font is different, so you need tell avatar how to align the content.
+Avatar already implement a free font(made by google and adobe)'s center algorithm in ./calc,
+If you need other font, feel free to PR or issue.
