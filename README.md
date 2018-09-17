@@ -3,8 +3,8 @@ Using [go freetype](https://github.com/golang/freetype) to build default avatar 
 
 
 ![number text](https://github.com/ShiningRush/avatarbuilder/blob/master/example/out.png "number text")
-![english text](https://github.com/ShiningRush/avatarbuilder/blob/master/example/outEg.png "english text")
-![chinese text](https://github.com/ShiningRush/avatarbuilder/blob/master/example/outCn.png "chinese text")
+![english text](https://github.com/ShiningRush/avatarbuilder/blob/master/example/outEn.png "english text")
+![chinese text](https://github.com/ShiningRush/avatarbuilder/blob/master/example/outCh.png "chinese text")
 
 ## Install
 
