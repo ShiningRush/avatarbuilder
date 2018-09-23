@@ -31,8 +31,8 @@ Some snipet is as blow
 	}
 ```
 
-## Extension Other Font
+## Extend Other Font
 
 Because element of width of each font is different, so you need tell avatar how to align the content.
-Avatar already implement a free font(made by google and adobe)'s center algorithm in ./calc,
+Avatar already implement a free font(made by google and adobe)'s center algorithm in `./calc`,
 If you need other font, feel free to PR or issue.
