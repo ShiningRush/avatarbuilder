@@ -3,7 +3,7 @@ package calc
 import (
 	"regexp"
 
-	"github.com/ShiningRush/avatarbuilder"
+	"github.com/shiningrush/avatarbuilder"
 )
 
 type SourceHansSansSCMedium struct{}

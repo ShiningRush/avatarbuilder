@@ -9,7 +9,7 @@ Using [go freetype](https://github.com/golang/freetype) to build default avatar 
 ## Install
 
 ```
-go get -u github.com/ShiningRush/avatarbuilder
+go get -u github.com/shiningrush/avatarbuilder
 ```
 
 ## Usage
@@ -33,6 +33,6 @@ Some snipet is as blow
 
 ## Extend Other Font
 
-Because element of width of each font is different, so you need tell avatar how to align the content.
-Avatar already implement a free font(made by google and adobe)'s center algorithm in `./calc`,
+Because element of width of each font is different, so you need tell builder how to align the content.
+AvatarBuilder already implement a free font(made by google and adobe)'s center algorithm in `./calc`,
 If you need other font, feel free to PR or issue.

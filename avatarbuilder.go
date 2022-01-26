@@ -3,7 +3,7 @@ package avatarbuilder
 import (
 	"bufio"
 	"bytes"
-	"errors"
+	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
@@ -23,7 +23,7 @@ type FontCenterCalculator interface {
 type AvatarBuilder struct {
 	W        int
 	H        int
-	fontfile string
+	fontFile string
 	fontsize float64
 	bg       color.Color
 	fg       color.Color
@@ -31,9 +31,9 @@ type AvatarBuilder struct {
 	calc     FontCenterCalculator
 }
 
-func NewAvatarBuilder(fontfile string, calc FontCenterCalculator) *AvatarBuilder {
+func NewAvatarBuilder(fontFile string, calc FontCenterCalculator) *AvatarBuilder {
 	ab := &AvatarBuilder{}
-	ab.fontfile = fontfile
+	ab.fontFile = fontFile
 	ab.bg, ab.fg = color.White, color.Black
 	ab.W, ab.H = 200, 200
 	ab.fontsize = 95
@@ -75,17 +75,16 @@ func (ab *AvatarBuilder) GenerateImageAndSave(s string, outname string) error {
 	// Save that RGBA image to disk.
 	outFile, err := os.Create(outname)
 	if err != nil {
-		return errors.New("create file: " + err.Error())
+		return fmt.Errorf("create file: %w", err)
 	}
 	defer outFile.Close()
 
 	b := bufio.NewWriter(outFile)
 	if _, err := b.Write(bs); err != nil {
-		return errors.New("write bytes to file: " + err.Error())
-
+		return fmt.Errorf("write bytes to file: %w", err)
 	}
 	if err = b.Flush(); err != nil {
-		return errors.New("flush image: " + err.Error())
+		return fmt.Errorf("flush image: %w", err)
 	}
 
 	return nil
@@ -102,12 +101,12 @@ func (ab *AvatarBuilder) GenerateImage(s string) ([]byte, error) {
 	x, y := ab.calc.CalculateCenterLocation(s, ab)
 	pt := freetype.Pt(x, y)
 	if _, err := ab.ctx.DrawString(s, pt); err != nil {
-		return nil, errors.New("draw string: " + err.Error())
+		return nil, fmt.Errorf("draw string: %w", err)
 	}
 
 	buf := &bytes.Buffer{}
 	if err := png.Encode(buf, rgba); err != nil {
-		return nil, errors.New("png encode: " + err.Error())
+		return nil, fmt.Errorf("png encode: %w", err)
 	}
 
 	return buf.Bytes(), nil
@@ -133,14 +132,14 @@ func (ab *AvatarBuilder) hexToRGBA(h uint32) *color.RGBA {
 
 func (ab *AvatarBuilder) buildDrawContext(rgba *image.RGBA) error {
 	// Read the font data.
-	fontBytes, err := ioutil.ReadFile(ab.fontfile)
+	fontBytes, err := ioutil.ReadFile(ab.fontFile)
 	if err != nil {
-		return errors.New("error when open font file:" + err.Error())
+		return fmt.Errorf("error when open font file: %w", err)
 	}
 
 	f, err := freetype.ParseFont(fontBytes)
 	if err != nil {
-		return errors.New("error when parse font file:" + err.Error())
+		return fmt.Errorf("error when parse font file: %w", err)
 	}
 
 	c := freetype.NewContext()

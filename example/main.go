@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"image/color"
 
-	"github.com/ShiningRush/avatarbuilder"
-	"github.com/ShiningRush/avatarbuilder/calc"
+	"github.com/shiningrush/avatarbuilder"
+	"github.com/shiningrush/avatarbuilder/calc"
 )
 
 var colors = []uint32{
@@ -22,7 +22,7 @@ func main() {
 	ab.SetFrontgroundColor(color.White)
 	ab.SetFontSize(80)
 	ab.SetAvatarSize(200, 200)
-	if err := ab.GenerateImageAndSave("缄默", "./outCn.png"); err != nil {
+	if err := ab.GenerateImageAndSave("小帅", "./outCn.png"); err != nil {
 		fmt.Println(err)
 		return
 	}
